@@ -77,7 +77,13 @@ ntuple_clusters = cms.PSet(
 from L1Trigger.L1THGCal.egammaIdentification import egamma_identification_drnn_cone
 ntuple_multicluster = cms.PSet(
     NtupleName = cms.string('HGCalTriggerNtupleHGCMulticlusters'),
-    Multiclusters = cms.InputTag('hgcalBackEndLayer2Producer:HGCalBackendLayer2Processor3DClustering')
+    Multiclusters = cms.InputTag('hgcalBackEndLayer2Producer:HGCalBackendLayer2Processor3DClustering'),
+    EGIdentification = egamma_identification_drnn_cone.clone()
+)
+
+ntuple_panels = cms.PSet(
+    NtupleName = cms.string('HGCalTriggerNtupleHGCPanels'),
+    TriggerCells = cms.InputTag('hgcalConcentratorProducer:HGCalConcentratorProcessorSelection')
 )
 
 ntuple_tower = cms.PSet(
