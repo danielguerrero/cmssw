@@ -649,11 +649,11 @@ void HcalTriggerPrimitiveAlgo::analyzeHFQIE10(
 		 // what is commonly called the "second" HF min-bias bit is
 		 // actually the 0-th bit, which can also be used instead for the EM bit
 		 // (called finegrain[ibin][0] below) in non-HI running
-		 finegrain[ibin][0] = finegrain[ibin][0] or detail.fgbits[idx][1];
+		 finegrain[ibin][0] = finegrain[ibin][1] or detail.fgbits[idx][1];
                }
             }
 	    // the EM bit is only used if the "second" FG bit is disabled
-            if (embit != nullptr and FG_HF_thresholds_.at(1) != 255) {
+            if (embit != nullptr and FG_HF_thresholds.at(1) != 255) {
                finegrain[ibin][0] = embit->fineGrainbit(
                      details[1].digi, details[3].digi,
                      details[0].digi, details[2].digi,

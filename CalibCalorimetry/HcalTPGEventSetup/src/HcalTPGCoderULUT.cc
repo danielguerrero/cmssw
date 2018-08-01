@@ -118,6 +118,7 @@ void HcalTPGCoderULUT::buildCoder(const HcalTopology* topo, const edm::ESHandle<
     theCoder->setLUTGenerationMode(LUTGenerationMode_);
     theCoder->setMaskBit(maskBit_);
     theCoder->setFGHFthreshold(FG_HF_threshold_);
+    theCoder->setFGHFthresholds(FG_HF_thresholds_);
   }
 }
 
