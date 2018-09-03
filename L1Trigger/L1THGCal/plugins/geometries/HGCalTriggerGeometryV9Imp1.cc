@@ -710,9 +710,7 @@ fillNeighborMap(const edm::FileInPath& file,  neighbor_map& neighbors_map, bool 
         std::vector<std::string> neighbors_tokens {
             std::sregex_token_iterator(line.begin(), line.end(), neighbors_regex), {}
         };
-        if( (scintillator && neighbors_tokens.empty()) ||
-            (!scintillator && neighbors_tokens.size()<2)
-            )
+        if(neighbors_tokens.empty())
         {
             throw cms::Exception("BadGeometry")
                 << "Syntax error in the L1TCellNeighborsMapping:\n"
