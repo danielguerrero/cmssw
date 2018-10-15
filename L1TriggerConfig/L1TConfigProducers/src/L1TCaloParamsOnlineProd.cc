@@ -86,7 +86,7 @@ std::map<std::string, l1t::Mask>& ) {
     "egammaMaxEta",
     "egammaBypassCuts",
     "egammaBypassShape",
-    "egammaBypassEcalFG",
+    "egammaBypassEcalFG'",
     "egammaBypassExtendedHOverE",
     "egammaHOverECut_iEtaLT15",
     "egammaHOverECut_iEtaGTEq15",
@@ -114,10 +114,8 @@ std::map<std::string, l1t::Mask>& ) {
     "ET_centralityUpperThresholds",
     "ET_energyCalibLUT",
     "ecalET_energyCalibLUT",
-    "MET_energyCalibLUT",
-    "METHF_energyCalibLUT",
-    "MET_phiCalibLUT",
-    "METHF_phiCalibLUT",
+    "METX_energyCalibLUT",
+    "METY_energyCalibLUT"
   };
 
   for (const auto param : expectedParams) {
@@ -137,7 +135,7 @@ std::map<std::string, l1t::Mask>& ) {
   paramsHelper.setEgEtaCut((conf["egammaMaxEta"].getValue<int>()));
   paramsHelper.setEgBypassEGVetos(conf["egammaBypassCuts"].getValue<bool>());
   paramsHelper.setEgBypassShape( conf["egammaBypassShape"].getValue<bool>() );
-  paramsHelper.setEgBypassECALFG( conf["egammaBypassEcalFG"].getValue<bool>() );
+  paramsHelper.setEgBypassECALFG( conf["egammaBypassECALFG"].getValue<bool>() );
   paramsHelper.setEgBypassExtHOverE( conf["egammaBypassExtendedHOverE"].getValue<bool>() );
   paramsHelper.setEgHOverEcutBarrel(conf["egammaHOverECut_iEtaLT15"].getValue<int>());
   paramsHelper.setEgHOverEcutEndcap(conf["egammaHOverECut_iEtaGTEq15"].getValue<int>());
@@ -150,6 +148,16 @@ std::map<std::string, l1t::Mask>& ) {
   paramsHelper.setTauIsolationLUT  ( l1t::convertToLUT( conf["tauIsoLUT"].getVector<int>() ) );
   paramsHelper.setTauTrimmingShapeVetoLUT( l1t::convertToLUT( conf["tauTrimmingLUT"].getVector<int>() ) );
 
+  paramsHelper.setIsoTauEtaMax((conf["tauMaxEta"].getValue<int>()));
+  paramsHelper.setTauCalibrationLUT( l1t::convertToLUT( conf["tauEnergyCalibLUT"].getVector<int>() ) );
+  paramsHelper.setTauIsolationLUT  ( l1t::convertToLUT( conf["tauIsoLUT"].getVector<int>() ) );
+  paramsHelper.setTauTrimmingShapeVetoLUT( l1t::convertToLUT( conf["tauTrimmingLUT"].getVector<int>() ) );
+
+
+  paramsHelper.setJetSeedThreshold((conf["jetSeedThreshold"].getValue<int>())/2);
+  paramsHelper.setJetBypassPUS(conf["jetBypassPileUpSub"].getValue<bool>());
+  paramsHelper.setJetPUSUsePhiRing(conf["jetPUSUsePhiRing"].getValue<bool>());
+  paramsHelper.setJetCalibrationLUT ( l1t::convertToLUT( conf["jetEnergyCalibLUT"].getVector<uint32_t>() ) );
 
   paramsHelper.setJetSeedThreshold((conf["jetSeedThreshold"].getValue<int>())/2);
   paramsHelper.setJetBypassPUS(conf["jetBypassPileUpSub"].getValue<bool>());
@@ -180,24 +188,11 @@ std::map<std::string, l1t::Mask>& ) {
   paramsHelper.setEtSumEttPUSLUT    ( l1t::convertToLUT( conf["ET_towerThresholdLUT"].getVector<int>() ) );
   paramsHelper.setEtSumEcalSumPUSLUT( l1t::convertToLUT( conf["ecalET_towerThresholdLUT"].getVector<int>() ) );
 
-  std::vector<double> etSumCentLowerValues;
-  std::vector<double> etSumCentUpperValues;
-
-  etSumCentLowerValues = conf["ET_centralityLowerThresholds"].getVector<double>();
-  etSumCentUpperValues = conf["ET_centralityUpperThresholds"].getVector<double>();
-
-  for(uint i=0; i<8; ++i){
-    paramsHelper.setEtSumCentLower(i, etSumCentLowerValues[i]/2);
-    paramsHelper.setEtSumCentUpper(i, etSumCentUpperValues[i]/2);
-  }
-
   // demux tower sum calib LUTs
   paramsHelper.setEtSumEttCalibrationLUT    ( l1t::convertToLUT( conf["ET_energyCalibLUT"].getVector<int>() ) );
   paramsHelper.setEtSumEcalSumCalibrationLUT( l1t::convertToLUT( conf["ecalET_energyCalibLUT"].getVector<int>() ) );
-  paramsHelper.setMetCalibrationLUT      ( l1t::convertToLUT( conf["MET_energyCalibLUT"].getVector<int>() ) );
-  paramsHelper.setMetHFCalibrationLUT      ( l1t::convertToLUT( conf["METHF_energyCalibLUT"].getVector<int>() ) );
-  paramsHelper.setMetPhiCalibrationLUT      ( l1t::convertToLUT( conf["MET_phiCalibLUT"].getVector<int>() ) );
-  paramsHelper.setMetHFPhiCalibrationLUT      ( l1t::convertToLUT( conf["METHF_phiCalibLUT"].getVector<int>() ) );
+  paramsHelper.setEtSumXCalibrationLUT      ( l1t::convertToLUT( conf["METX_energyCalibLUT"].getVector<int>() ) );
+  paramsHelper.setEtSumYCalibrationLUT      ( l1t::convertToLUT( conf["METY_energyCalibLUT"].getVector<int>() ) );
 
   return true;
 }
