@@ -83,31 +83,8 @@ process.siPixelClusterShapeCachePreSplitting = siPixelClusterShapeCache.clone(
 )
 process.load("RecoLocalTracker.SiPixelRecHits.PixelCPEGeneric_cfi")
 
+#-----------------
 
-#---------------
-# Calibration
-#---------------
-# Condition for P5 cluster
-process.load("DQM.Integration.config.FrontierCondition_GT_cfi")
-# Condition for lxplus: change and possibly customise the GT
-#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-#from Configuration.AlCa.GlobalTag import GlobalTag as gtCustomise
-#process.GlobalTag = gtCustomise(process.GlobalTag, 'auto:run2_data', '')
-
-# Change Beam Monitor variables
-if process.dqmRunConfig.type.value() is "production":
-  process.dqmBeamMonitor.BeamFitter.WriteAscii = True
-  process.dqmBeamMonitor.BeamFitter.AsciiFileName = '/nfshome0/yumiceva/BeamMonitorDQM/BeamFitResultsOld.txt'
-  process.dqmBeamMonitor.BeamFitter.WriteDIPAscii = True
-  process.dqmBeamMonitor.BeamFitter.DIPFileName = '/nfshome0/dqmpro/BeamMonitorDQM/BeamFitResultsOld.txt'
-else:
-  process.dqmBeamMonitor.BeamFitter.WriteAscii = False
-  process.dqmBeamMonitor.BeamFitter.AsciiFileName = '/nfshome0/yumiceva/BeamMonitorDQM/BeamFitResultsOld.txt'
-  process.dqmBeamMonitor.BeamFitter.WriteDIPAscii = True
-  process.dqmBeamMonitor.BeamFitter.DIPFileName = '/nfshome0/dqmdev/BeamMonitorDQM/BeamFitResultsOld.txt'
-
-
-#----------------------------
 # TrackingMonitor
 process.pixelTracksCutClassifier = cms.EDProducer( "TrackCutClassifier",
     src = cms.InputTag( "pixelTracks" ),
@@ -248,20 +225,12 @@ process.dqmBeamSpotProblemMonitor.pixelTracks  = 'pixelTracks'
 
 #
 process.qTester = cms.EDAnalyzer("QualityTester",
-<<<<<<< HEAD
     qtList = cms.untracked.FileInPath('DQM/BeamMonitor/test/BeamSpotAvailableTest.xml'),
     prescaleFactor = cms.untracked.int32(1),                               
     qtestOnEndLumi = cms.untracked.bool(True),
     testInEventloop = cms.untracked.bool(False),
     verboseQT =  cms.untracked.bool(True)                 
 )
-=======
-                                 qtList = cms.untracked.FileInPath('DQM/BeamMonitor/test/BeamSpotAvailableTest.xml'),
-                                 prescaleFactor = cms.untracked.int32(1),                               
-                                 qtestOnEndLumi = cms.untracked.bool(True),
-                                 testInEventloop = cms.untracked.bool(False),
-                                 verboseQT =  cms.untracked.bool(True)                 
-                                )
 
 process.BeamSpotProblemModule = cms.Sequence( process.qTester
  	  	                             *process.dqmBeamSpotProblemMonitor
@@ -409,7 +378,6 @@ if (process.runType.getRunType() == process.runType.pp_run or process.runType.ge
                          *process.tracking_FirstStep
                          *process.monitor
                          *process.BeamSpotProblemModule)
->>>>>>> Added pixel activity filter to Beam Monitor
 
 #
 process.BeamSpotProblemModule = cms.Sequence(process.qTester
