@@ -52,7 +52,9 @@ namespace l1t {
 	   etSumCentralityLower=45,
 	   etSumCentralityUpper=46,
 	   jetPUSUsePhiRingFlag=47,
-	   NUM_CALOPARAMNODES=48
+	   metPhiCalibration=48,
+	   metHFPhiCalibration=49,
+	   NUM_CALOPARAMNODES=50
     };
 
     CaloParamsHelperO2O() { pnode_.resize(NUM_CALOPARAMNODES); }
