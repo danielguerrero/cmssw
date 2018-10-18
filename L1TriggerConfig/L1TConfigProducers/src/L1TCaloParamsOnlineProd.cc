@@ -142,10 +142,9 @@ std::map<std::string, l1t::Mask>& ) {
   paramsHelper.setTauSeedThreshold((conf["leptonSeedThreshold"].getValue<int>())/2);
   paramsHelper.setEgNeighbourThreshold((conf["leptonTowerThreshold"].getValue<int>())/2);
   paramsHelper.setTauNeighbourThreshold((conf["leptonTowerThreshold"].getValue<int>())/2);
-  paramsHelper.setPileUpTowerThreshold((conf["pileUpTowerThreshold"].getValue<int>())/2);
-
-  paramsHelper.setEgMaxPtHOverE((conf["egammaRelaxationThreshold"].getValue<int>())/2.);
-  paramsHelper.setEgEtaCut((conf["egammaMaxEta"].getValue<int>()));
+  paramsHelper.setJetSeedThreshold((conf["jetSeedThreshold"].getValue<int>())/2);
+  paramsHelper.setJetBypassPUS(conf["jetBypassPileUpSub"].getValue<bool>());
+  paramsHelper.setJetPUSUsePhiRing(conf["jetPUSUsePhiRing"].getValue<bool>());
   paramsHelper.setEgBypassEGVetos(conf["egammaBypassCuts"].getValue<bool>());
   paramsHelper.setEgBypassShape( conf["egammaBypassShape"].getValue<bool>() );
   paramsHelper.setEgBypassECALFG( conf["egammaBypassECALFG"].getValue<bool>() );
