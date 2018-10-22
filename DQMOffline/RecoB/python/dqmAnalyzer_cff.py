@@ -57,7 +57,7 @@ bTagPlotsMC = cms.Sequence(bTagValidation)
 ## customizations for the pp_on_AA eras
 (pp_on_XeXe_2017 | pp_on_AA_2018).toModify(bTagValidation,
                                            doJEC=False
-)
+                                           )
 
 #to run on fullsim in the validation sequence, all histograms produced in the dqmoffline sequence
 bTagValidationNoall = bTagValidation.clone(flavPlots="bcl")
