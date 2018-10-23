@@ -33,6 +33,7 @@ process.load("DQM.Integration.config.FrontierCondition_GT_cfi")
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 #from Configuration.AlCa.GlobalTag import GlobalTag as gtCustomise
 #process.GlobalTag = gtCustomise(process.GlobalTag, 'auto:run2_data', '')
+#process.GlobalTag.globaltag = "102X_dataRun2_Express_v4"
 process.GlobalTag.RefreshEachRun = cms.untracked.bool(True)
 
 ############# DQM Cetral Modules ################
@@ -160,7 +161,6 @@ print("Running with run type = ", process.runType.getRunType())
 if (process.runType.getRunType() == process.runType.hi_run):
     process.rpcunpacker.InputLabel = cms.InputTag("rawDataRepacker")
     process.scalersRawToDigi.scalersInputTag = cms.InputTag("rawDataRepacker")
-    process.rpcTwinMuxRawToDigi.inputTag = cms.InputTag("rawDataRepacker")
     process.rpcCPPFRawToDigi.inputTag = cms.InputTag("rawDataRepacker")
     process.omtfStage2Digis.inputLabel = cms.InputTag("rawDataRepacker")
     process.rpcEventSummary.MinimumRPCEvents  = cms.untracked.int32(100000)
