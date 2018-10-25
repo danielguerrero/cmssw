@@ -83,7 +83,31 @@ process.siPixelClusterShapeCachePreSplitting = siPixelClusterShapeCache.clone(
 )
 process.load("RecoLocalTracker.SiPixelRecHits.PixelCPEGeneric_cfi")
 
-#-----------------
+
+#---------------
+# Calibration
+#---------------
+# Condition for P5 cluster
+process.load("DQM.Integration.config.FrontierCondition_GT_cfi")
+# Condition for lxplus: change and possibly customise the GT
+#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+#from Configuration.AlCa.GlobalTag import GlobalTag as gtCustomise
+#process.GlobalTag = gtCustomise(process.GlobalTag, 'auto:run2_data', '')
+
+# Change Beam Monitor variables
+if process.dqmRunConfig.type.value() is "production":
+  process.dqmBeamMonitor.BeamFitter.WriteAscii = True
+  process.dqmBeamMonitor.BeamFitter.AsciiFileName = '/nfshome0/yumiceva/BeamMonitorDQM/BeamFitResultsOld.txt'
+  process.dqmBeamMonitor.BeamFitter.WriteDIPAscii = True
+  process.dqmBeamMonitor.BeamFitter.DIPFileName = '/nfshome0/dqmpro/BeamMonitorDQM/BeamFitResultsOld.txt'
+else:
+  process.dqmBeamMonitor.BeamFitter.WriteAscii = False
+  process.dqmBeamMonitor.BeamFitter.AsciiFileName = '/nfshome0/yumiceva/BeamMonitorDQM/BeamFitResultsOld.txt'
+  process.dqmBeamMonitor.BeamFitter.WriteDIPAscii = True
+  process.dqmBeamMonitor.BeamFitter.DIPFileName = '/nfshome0/dqmdev/BeamMonitorDQM/BeamFitResultsOld.txt'
+
+
+#----------------------------
 # TrackingMonitor
 process.pixelTracksCutClassifier = cms.EDProducer( "TrackCutClassifier",
     src = cms.InputTag( "pixelTracks" ),
@@ -224,12 +248,167 @@ process.dqmBeamSpotProblemMonitor.pixelTracks  = 'pixelTracks'
 
 #
 process.qTester = cms.EDAnalyzer("QualityTester",
+<<<<<<< HEAD
     qtList = cms.untracked.FileInPath('DQM/BeamMonitor/test/BeamSpotAvailableTest.xml'),
     prescaleFactor = cms.untracked.int32(1),                               
     qtestOnEndLumi = cms.untracked.bool(True),
     testInEventloop = cms.untracked.bool(False),
     verboseQT =  cms.untracked.bool(True)                 
 )
+=======
+                                 qtList = cms.untracked.FileInPath('DQM/BeamMonitor/test/BeamSpotAvailableTest.xml'),
+                                 prescaleFactor = cms.untracked.int32(1),                               
+                                 qtestOnEndLumi = cms.untracked.bool(True),
+                                 testInEventloop = cms.untracked.bool(False),
+                                 verboseQT =  cms.untracked.bool(True)                 
+                                )
+
+process.BeamSpotProblemModule = cms.Sequence( process.qTester
+ 	  	                             *process.dqmBeamSpotProblemMonitor
+                                            )
+
+#make it off for cosmic run
+if ( process.runType.getRunType() == process.runType.cosmic_run or process.runType.getRunType() == process.runType.cosmic_run_stage1):
+    process.dqmBeamSpotProblemMonitor.AlarmOFFThreshold = 5       #Should be < AlalrmONThreshold 
+#-----------------------------------------------------------
+
+### process customizations included here
+from DQM.Integration.config.online_customizations_cfi import *
+process = customise(process)
+
+
+#--------------------------
+# Proton-Proton Stuff
+#--------------------------
+
+if (process.runType.getRunType() == process.runType.pp_run or process.runType.getRunType() == process.runType.pp_run_stage1 or
+    process.runType.getRunType() == process.runType.cosmic_run or process.runType.getRunType() == process.runType.cosmic_run_stage1 or 
+    process.runType.getRunType() == process.runType.hpu_run):
+
+    print("[beam_dqm_sourceclient-live_cfg]:: Running pp")
+
+    process.castorDigis.InputLabel = cms.InputTag("rawDataCollector")
+    process.csctfDigis.producer = cms.InputTag("rawDataCollector")
+    process.dttfDigis.DTTF_FED_Source = cms.InputTag("rawDataCollector")
+    process.ecalDigis.InputLabel = cms.InputTag("rawDataCollector")
+    process.ecalPreshowerDigis.sourceTag = cms.InputTag("rawDataCollector")
+    process.gctDigis.inputLabel = cms.InputTag("rawDataCollector")
+    process.gtDigis.DaqGtInputTag = cms.InputTag("rawDataCollector")
+    process.hcalDigis.InputLabel = cms.InputTag("rawDataCollector")
+    process.muonCSCDigis.InputObjects = cms.InputTag("rawDataCollector")
+    process.muonDTDigis.inputLabel = cms.InputTag("rawDataCollector")
+    process.muonRPCDigis.InputLabel = cms.InputTag("rawDataCollector")
+    process.scalersRawToDigi.scalersInputTag = cms.InputTag("rawDataCollector")
+    process.siPixelDigis.InputLabel = cms.InputTag("rawDataCollector")
+    process.siStripDigis.ProductLabel = cms.InputTag("rawDataCollector")
+
+
+    process.load("RecoVertex.BeamSpotProducer.BeamSpot_cfi")
+
+    process.dqmBeamMonitor.OnlineMode = True              
+    process.dqmBeamMonitor.resetEveryNLumi = 5
+    process.dqmBeamMonitor.resetPVEveryNLumi = 5
+    process.dqmBeamMonitor.PVFitter.minNrVerticesForFit = 20
+    process.dqmBeamMonitor.PVFitter.minVertexNdf = 10
+  
+
+    if (runFirstStepTrk): # for first Step Tracking
+        print("[beam_dqm_sourceclient-live_cfg]:: firstStepTracking")
+        # Import TrackerLocalReco sequence
+        process.load('RecoLocalTracker.Configuration.RecoLocalTracker_cff')
+        # Import MeasurementTrackerEvents used during patter recognition
+        process.load('RecoTracker.MeasurementDet.MeasurementTrackerEventProducer_cfi')
+        #Import stuff to run the initial step - PreSplitting - of the
+        #iterative tracking and remove Calo-related sequences
+        process.load('RecoTracker.IterativeTracking.InitialStepPreSplitting_cff')
+        process.InitialStepPreSplitting.remove(process.initialStepTrackRefsForJetsPreSplitting)
+        process.InitialStepPreSplitting.remove(process.caloTowerForTrkPreSplitting)
+        process.InitialStepPreSplitting.remove(process.ak4CaloJetsForTrkPreSplitting)
+        process.InitialStepPreSplitting.remove(process.jetsForCoreTrackingPreSplitting)
+        process.InitialStepPreSplitting.remove(process.siPixelClusters)
+        process.InitialStepPreSplitting.remove(process.siPixelRecHits)
+        process.InitialStepPreSplitting.remove(process.MeasurementTrackerEvent)
+        process.InitialStepPreSplitting.remove(process.siPixelClusterShapeCache)
+        # 2016-11-28 MK FIXME: I suppose I should migrate the lines below following the "new seeding framework"
+        #
+        # if z is very far due to bad fit
+        process.initialStepSeedsPreSplitting.RegionFactoryPSet.RegionPSet.originRadius = 1.5
+        process.initialStepSeedsPreSplitting.RegionFactoryPSet.RegionPSet.originHalfLength = cms.double(30.0)
+        #Increase pT threashold at seeding stage (not so accurate)                                                                                      
+        process.initialStepSeedsPreSplitting.RegionFactoryPSet.RegionPSet.ptMin = 0.9
+
+        # some inputs to BeamMonitor
+        process.dqmBeamMonitor.BeamFitter.TrackCollection = 'initialStepTracksPreSplitting'         
+        process.dqmBeamMonitor.primaryVertex = 'firstStepPrimaryVerticesPreSplitting'
+        process.dqmBeamMonitor.PVFitter.VertexCollection = 'firstStepPrimaryVerticesPreSplitting'
+
+        process.dqmBeamMonitor.PVFitter.errorScale = 0.95 #keep checking this with new release expected close to 1
+
+        process.tracking_FirstStep  = cms.Sequence( process.siPixelDigis*
+                                                     process.siStripDigis*
+                                                     process.pixeltrackerlocalreco*
+                                                     process.striptrackerlocalreco*
+                                                     process.offlineBeamSpot*                          
+                                                     process.MeasurementTrackerEventPreSplitting*
+                                                     process.siPixelClusterShapeCachePreSplitting*
+                                                     process.InitialStepPreSplitting
+                                                     )
+    else: # pixel tracking
+        print("[beam_dqm_sourceclient-live_cfg]:: pixelTracking")
+
+
+        #pixel  track/vertices reco
+        process.load("RecoPixelVertexing.Configuration.RecoPixelVertexing_cff")
+        process.pixelTracksTrackingRegions.RegionPSet.originRadius = 0.4
+        process.pixelTracksTrackingRegions.RegionPSet.originHalfLength = 12
+        process.pixelTracksTrackingRegions.RegionPSet.originXPos = 0.08
+        process.pixelTracksTrackingRegions.RegionPSet.originYPos = -0.03
+        process.pixelTracksTrackingRegions.RegionPSet.originZPos = 0.
+        process.pixelVertices.TkFilterParameters.minPt = process.pixelTracksTrackingRegions.RegionPSet.ptMin
+
+        process.dqmBeamMonitor.PVFitter.errorScale = 1.22 #keep checking this with new release expected close to 1.2
+ 
+        process.tracking_FirstStep  = cms.Sequence(process.siPixelDigis* 
+                                                   process.siStripDigis *
+                                                   process.striptrackerlocalreco *
+                                                   process.offlineBeamSpot*
+                                                   process.siPixelClustersPreSplitting*
+                                                   process.siPixelRecHitsPreSplitting*
+                                                   process.siPixelClusterShapeCachePreSplitting*
+                                                   process.recopixelvertexing
+                                                  )
+ 
+
+    #TriggerName for selecting pv for DIP publication, NO wildcard needed here
+    #it will pick all triggers which has these strings in theri name
+    process.dqmBeamMonitor.jetTrigger  = cms.untracked.vstring("HLT_PAZeroBias_v",
+                                                               "HLT_ZeroBias_v", 
+                                                               "HLT_QuadJet")
+
+    process.dqmBeamMonitor.hltResults = cms.InputTag("TriggerResults","","HLT")
+ 
+    # Select events based on the pixel cluster multiplicity
+    import  HLTrigger.special.hltPixelActivityFilter_cfi
+    process.multFilter = HLTrigger.special.hltPixelActivityFilter_cfi.hltPixelActivityFilter.clone(
+       inputTag  = cms.InputTag('siPixelClustersPreSplitting'),
+       minClusters = cms.uint32(10000),
+       maxClusters = cms.uint32(50000)
+    )
+
+    process.filter_step = cms.Sequence( process.siPixelDigis
+                                       *process.siPixelClustersPreSplitting
+                                       *process.multFilter
+                                  )
+
+    process.p = cms.Path(process.scalersRawToDigi
+                         *process.dqmTKStatus
+                         *process.hltTriggerTypeFilter
+                         *process.filter_step
+                         *process.dqmcommon
+                         *process.tracking_FirstStep
+                         *process.monitor
+                         *process.BeamSpotProblemModule)
+>>>>>>> Added pixel activity filter to Beam Monitor
 
 #
 process.BeamSpotProblemModule = cms.Sequence(process.qTester
