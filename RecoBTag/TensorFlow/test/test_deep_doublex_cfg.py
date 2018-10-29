@@ -6,7 +6,7 @@ process = cms.Process("PATtest")
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 
 ## Options and Output Report
@@ -52,8 +52,8 @@ updateJetCollection(
    jetCorrections = ('AK8PFchs', cms.vstring(['L2Relative', 'L3Absolute']), 'None'),
    btagDiscriminators = [
       'pfBoostedDoubleSecondaryVertexAK8BJetTags',
-      'pfDeepDoubleBJetTags:probQ', 
-      'pfDeepDoubleBJetTags:probH',
+      'pfDeepDoubleBvLJetTags:probQCD', 
+      'pfDeepDoubleBvLJetTags:probHbb',
       'pfDeepDoubleCvLJetTags:probQCD',
       'pfDeepDoubleCvLJetTags:probHcc',
       'pfDeepDoubleCvBJetTags:probHbb',
